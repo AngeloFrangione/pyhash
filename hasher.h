@@ -29,6 +29,7 @@ class Hasher
 		int running;
 		struct pollfd pfd;
 		GAsyncQueue *queue_in;
+		int working;
 };
 
 #endif

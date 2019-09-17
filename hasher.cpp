@@ -15,11 +15,13 @@ void *Hasher::worker(void *o)
 		action_t *a;
 		if (g_async_queue_length(obj->queue_in))
 		{
+			obj->working = 1;
 			if ((a = (action_t*)g_async_queue_pop(obj->queue_in)))
 			{
 				if (!a->data[0])
 				{
 					obj->running = 0;
+					obj->working = 0;
 					close(obj->pfd.fd);
 					free(a->data);
 					free(a);
@@ -32,7 +34,10 @@ void *Hasher::worker(void *o)
 			}
 		}
 		else
+		{
+			obj->working = 0;
 			pthread_cond_wait(&(obj->cond), &(obj->mutex));
+		}
 	}
 	return obj;
 }
@@ -42,6 +47,7 @@ Hasher::Hasher()
 	MD5_Init(&ctx);
 	pthread_create(&thr, NULL, Hasher::worker, this);
 	running		= 1;
+	working		= 0;
 	cond 		= PTHREAD_COND_INITIALIZER;
 	mutex		= PTHREAD_MUTEX_INITIALIZER;
 	queue_in	= g_async_queue_new();
@@ -56,6 +62,7 @@ void Hasher::Update(char *data, int bytes)
 	a = (action_t*)calloc(sizeof(action_t), 1);
 	if (!a)
 		return ;
+	working = 1;
 	a->data = strdup(data);
 	a->bytes = bytes;
 	g_async_queue_push(queue_in, a);
@@ -66,6 +73,10 @@ char *Hasher::Result()
 {
 	static char out[33];
 	unsigned char digest[16];
+
+	while(working)
+		usleep(10000);
+	running = 0;
 	pthread_cond_signal(&cond);
 	pthread_join(thr, NULL);
 
