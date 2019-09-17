@@ -20,7 +20,7 @@ include_directories(BEFORE
 
 add_library(hasher SHARED chasher.cpp hasher.cpp)
 
-set_target_properties(hasher PROPERTIES PUBLIC_HEADER "chasher.h" VERSION 0.0.0 SOVERSION 0)
+set_target_properties(hasher PROPERTIES PUBLIC_HEADER "chasher.h;hasher.h" VERSION 0.0.0 SOVERSION 0)
 
 find_package(PkgConfig REQUIRED)
 pkg_search_module(GLIB REQUIRED glib-2.0)

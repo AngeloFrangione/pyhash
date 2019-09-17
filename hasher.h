@@ -1,7 +1,9 @@
 #ifndef _HASHER_HPP
 # define _HASHER_HPP
-# include "openssl/md5.h"
-# include "poll.h"
+# include <openssl/md5.h>
+# include <pthread.h>
+# include <gmodule.h>
+# include <poll.h>
 
 # define TOKENS 4
 

@@ -1,13 +1,5 @@
-#include <openssl/md5.h>
-#include <string.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <stdio.h>
-#include <sys/eventfd.h>
 #include <pthread.h>
 #include <gmodule.h>
-#include <glib.h>
-#include "hasher.h"
 #include "chasher.h"
 
 void *hasher_create(void)

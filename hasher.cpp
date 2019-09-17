@@ -1,13 +1,8 @@
-#include <openssl/md5.h>
-#include <string.h>
 #include <stdlib.h>
 #include <sys/eventfd.h>
-#include <pthread.h>
 #include <gmodule.h>
-#include <glib.h>
 #include <stdio.h>
 #include <unistd.h>
-#include <pthread.h>
 #include "hasher.h"
 
 void *Hasher::worker(void *o)
