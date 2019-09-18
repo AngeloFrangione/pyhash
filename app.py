@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 import eventlet
-from pyhash import BackgroundTask
+from pymhash import BackgroundTask
 import random
 from time import sleep
 

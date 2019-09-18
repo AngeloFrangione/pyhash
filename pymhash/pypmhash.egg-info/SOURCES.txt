@@ -1,0 +1,7 @@
+pymhash.py
+setup.py
+pypmhash.egg-info/PKG-INFO
+pypmhash.egg-info/SOURCES.txt
+pypmhash.egg-info/dependency_links.txt
+pypmhash.egg-info/requires.txt
+pypmhash.egg-info/top_level.txt
