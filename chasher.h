@@ -11,6 +11,7 @@ extern "C"
 void		*hasher_create(void);
 int			hasher_getfd(void *context);
 void		hasher_update(void *context, char *data, int bytes);
+int			hasher_queue_status(void *context);
 char		*hasher_result(void *context);
 void		hasher_destroy(void *context);
 

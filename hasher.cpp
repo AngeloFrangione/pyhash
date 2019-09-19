@@ -26,7 +26,7 @@ void *Hasher::worker(void *o)
 					free(a->data);
 					free(a);
 					break;
-				} 
+				}
 				MD5_Update(&(obj->ctx), a->data, a->bytes);
 				free(a->data);
 				write(obj->pfd.fd, &u, 8);
@@ -53,8 +53,8 @@ Hasher::Hasher()
 	queue_in	= g_async_queue_new();
 	pfd.fd		= eventfd(TOKENS, EFD_CLOEXEC | EFD_SEMAPHORE);
 	pfd.events	= POLLIN;
-
 }
+
 void Hasher::Update(char *data, int bytes)
 {
 	action_t *a;
@@ -67,8 +67,14 @@ void Hasher::Update(char *data, int bytes)
 	a->bytes = bytes;
 	g_async_queue_push(queue_in, a);
 	pthread_cond_signal(&cond);
-	
 }
+
+int Hasher::QueueStatus()
+{
+	return (g_async_queue_length(queue_in) >= TOKENS);
+}
+
+
 char *Hasher::Result()
 {
 	static char out[33];
@@ -85,6 +91,7 @@ char *Hasher::Result()
 		snprintf(&(out[i * 2]), 16 * 2, "%02x", (unsigned int)digest[i]);	
 	return out;
 }
+
 Hasher::~Hasher()
 {
 	close(pfd.fd);

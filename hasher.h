@@ -5,7 +5,7 @@
 # include <gmodule.h>
 # include <poll.h>
 
-# define TOKENS 4
+# define TOKENS 8
 
 typedef struct	action
 {
@@ -19,6 +19,7 @@ class Hasher
 		Hasher();
 		static void *worker(void *obj);
 		void Update(char *data, int bytes);
+		int QueueStatus();
 		char *Result();
 		~Hasher();
 		MD5_CTX ctx;

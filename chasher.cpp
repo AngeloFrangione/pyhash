@@ -27,6 +27,15 @@ void hasher_update(void *obj, char *data, int bytes)
 	o->Update(data, bytes);
 }
 
+int hasher_queue_status(void *obj)
+{
+	if (obj == NULL)
+		return 1;
+	Hasher *o;
+	o = static_cast<Hasher*>((Hasher*)obj);
+	return o->QueueStatus();
+}
+
 char *hasher_result(void *obj)
 {
 	if (obj == NULL)
@@ -43,4 +52,6 @@ void hasher_destroy(void *obj)
 	Hasher *o;
 	o = static_cast<Hasher*>((Hasher*)obj);
 	delete o;
+	o = NULL;
+	obj = NULL;
 }
