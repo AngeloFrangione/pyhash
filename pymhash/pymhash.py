@@ -1,8 +1,9 @@
 #!/usr/bin/env python
 from ctypes import CDLL, c_char_p, c_int, c_void_p, c_ulonglong
 from os import read, write
-import gevent
-from gevent.socket import wait_read
+import eventlet
+# import gevent
+# from gevent.socket import wait_read
 
 _lib = CDLL('libhasher.so')
 _lib.hasher_create.restype = c_void_p
@@ -26,9 +27,9 @@ class BackgroundTask:
         self.fd = _lib.hasher_getfd(self.ctx)
     def update(self, buf):
         if _lib.hasher_queue_status(self.ctx):
-            wait_read(self.fd)
+            eventlet.hubs.trampoline(self.fd, read=True)
         read(self.fd, 8)
-        _lib.hasher_update(self.ctx, buf, len(buf))
+        _lib.hasher_update(self.ctx, buf.encode('utf-8'), len(buf))
     def result(self):
         return _lib.hasher_result(self.ctx)
     def __del__(self):
