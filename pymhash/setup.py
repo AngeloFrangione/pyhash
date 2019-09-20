@@ -9,7 +9,7 @@ hasher = Extension('hasher',
 
 
 setup(name='pymhash',
-      version = '0.0.1',
+      version = '0.0.3',
       description = 'Python interface to a C++ library to calculate multiple MD5 hashes at same time.',
       author = 'Angelo Frangione',
       author_email = 'angelo.frangione@gmail.com',
