@@ -10,18 +10,15 @@ void *Hasher::worker(void *o)
 	uint64_t u = strtoull("1", NULL, 0);
 	Hasher *obj = (Hasher*)o;
 
-	while (obj->running)
+	while (true)
 	{
 		action_t *a;
-		if (g_async_queue_length(obj->queue_in))
+		if (g_async_queue_length(obj->queue_in) > 0)
 		{
-			obj->working = 1;
 			if ((a = (action_t*)g_async_queue_pop(obj->queue_in)))
 			{
 				if (!a->data[0])
 				{
-					obj->running = 0;
-					obj->working = 0;
 					close(obj->pfd.fd);
 					free(a->data);
 					free(a);
@@ -35,10 +32,13 @@ void *Hasher::worker(void *o)
 		}
 		else
 		{
-			obj->working = 0;
-			pthread_cond_wait(&(obj->cond), &(obj->mutex));
+			if (obj->running)
+				pthread_cond_wait(&(obj->cond), &(obj->mutex));
+			else
+				break;
 		}
 	}
+	obj->working = 0;
 	return obj;
 }
 
@@ -58,13 +58,14 @@ Hasher::Hasher()
 void Hasher::Update(char *data, int bytes)
 {
 	action_t *a;
-
+	uint64_t u = strtoull("1", NULL, 0);
 	a = (action_t*)calloc(sizeof(action_t), 1);
 	if (!a)
 		return ;
 	working = 1;
 	a->data = strdup(data);
 	a->bytes = bytes;
+	write(pfd.fd, &u, 8);
 	g_async_queue_push(queue_in, a);
 	pthread_cond_signal(&cond);
 }
@@ -74,18 +75,14 @@ int Hasher::QueueStatus()
 	return (g_async_queue_length(queue_in) >= TOKENS);
 }
 
-
 char *Hasher::Result()
 {
 	static char out[33];
 	unsigned char digest[16];
 
-	while(working)
-		usleep(10000);
 	running = 0;
 	pthread_cond_signal(&cond);
 	pthread_join(thr, NULL);
-
 	MD5_Final(digest, &ctx);
 	for (int i = 0; i < 16; ++i)
 		snprintf(&(out[i * 2]), 16 * 2, "%02x", (unsigned int)digest[i]);	
